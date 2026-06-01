@@ -10,19 +10,23 @@ import {
     FlatList,
     Alert,
     Dimensions,
+    Image,
 } from 'react-native';
 // SafeAreaView 是一个组件，可以确保内容不会被手机的状态栏、刘海等遮挡，提供一个安全的显示区域。
 // RefreshControl 是一个组件，通常与 ScrollView 或 FlatList 结合使用，提供下拉刷新功能。
 // FlatList 是一个高性能的组件，用于渲染长列表数据，支持懒加载、分段加载等功能。
 import { useState, useEffect } from 'react';
-
-import { Link } from 'expo-router'; // 导入Link组件，用于页面导航
+import { Link, Stack } from 'expo-router'; // 导入Link组件，用于页面导航
 // 自定义Loading组件
-import Loading from './components/shared/Loading';
-import NetworkError from './components/shared/NetworkError';
-import request, { get } from './util/request';
+import Loading from '../../components/shared/Loading';
+import NetworkError from '../../components/shared/NetworkError';
+import request, { get } from '../../util/request';
 
 const { width, height } = Dimensions.get('window'); // 通过Dimensions.get('window'),获取屏幕宽高
+
+function LeftIcon() {
+    return <Image style={styles.leftIcon} source={require('../../assets/favicon.png')} />;
+}
 
 export default function App() {
     const [count, setCount] = useState(0);
@@ -118,6 +122,22 @@ export default function App() {
 
     return (
         <SafeAreaView style={styles.container}>
+            {/* 给首页添加自定义标题和右边按钮 */}
+            <Stack.Screen
+                options={{
+                    headerTitle: '这是首页',
+                    headerStyle: { backgroundColor: '#f4511e' }, // 导航栏整体样式
+                    headerTintColor: '#fff', // 导航栏标题、按钮、图标的颜色
+                    headerTitleStyle: { fontWeight: 'bold' }, // 导航栏标题的样式
+                    headerLeft: () => <LeftIcon />, // 导航栏左边的组件，可以是一个图标或者文本
+                    headerRight: () => (
+                        <Button
+                            title="右边按钮"
+                            onPress={() => Alert.alert('你点击了右边的按钮')}
+                        />
+                    ),
+                }}
+            />
             {/* <ScrollView refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={'#1f99b0'}/>
       }>
@@ -140,10 +160,14 @@ export default function App() {
         <Button title='点击我，获取数据' onPress={fetchData}></Button>
       </ScrollView> */}
             <StatusBar style="auto" />
+            <Text>新的首页(入口页)</Text>
             <Text style={styles.title}>
                 屏幕宽度:{width} x 屏幕高度:{height}
             </Text>
             <Button title="点击我，alert1" onPress={onPressOne}></Button>
+            <Link href="/list" style={styles.link}>
+                跳转到专门的列表页
+            </Link>
 
             <FlatList
                 data={flatList}
@@ -211,5 +235,15 @@ const styles = StyleSheet.create({
         width: '100%',
         textAlign: 'center',
         padding: 10,
+    },
+    link: {
+        margin: 20,
+        fontSize: 16,
+        color: 'blue',
+    },
+    leftIcon: {
+        width: 24,
+        height: 24,
+        marginLeft: 10,
     },
 });
